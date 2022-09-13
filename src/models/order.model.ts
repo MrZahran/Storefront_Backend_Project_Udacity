@@ -2,7 +2,7 @@ import User from "../database/types/user.type";
 import db from "../database";
 import bcrypt from "bcrypt";
 import config from "../config";
-import Order from "../database/types/order.type";
+import { Order, ProductToOrder } from "../database/types/order.type";
 
 class GenerateOrder {
   // Create Order
@@ -10,12 +10,31 @@ class GenerateOrder {
     try {
       // Connect with DB
       const connection = await db.connect();
-      const sql = `INSERT INTO orders (qty, user_id, product_id) values ($1, $2, $3) returning *`;
+      const sql = `INSERT INTO orders (user_id, status) values ($1, $2) returning *`;
+      // Run Query
+      const result = await connection.query(sql, [order.user_id, order.status]);
+      // Release Connection
+      connection.release();
+      // Return Created User
+      return result.rows[0];
+    } catch (erorr) {
+      throw erorr;
+    }
+  }
+
+  // To Add One Or Many Product To Order
+  async addProductToOrder(
+    productToOrder: ProductToOrder
+  ): Promise<ProductToOrder> {
+    try {
+      // Connect with DB
+      const connection = await db.connect();
+      const sql = `INSERT INTO order_products (order_id, product_id, qty) values ($1, $2, $3) returning *`;
       // Run Query
       const result = await connection.query(sql, [
-        order.qty,
-        order.user_id,
-        order.product_id,
+        productToOrder.order_id,
+        productToOrder.product_id,
+        productToOrder.qty,
       ]);
       // Release Connection
       connection.release();
@@ -53,15 +72,15 @@ class GenerateOrder {
   }
 
   // Update Order
-  async updateOrder(order: Order): Promise<Order> {
+  async updateOrder(productToOrder: ProductToOrder): Promise<ProductToOrder> {
     try {
       const connection = await db.connect();
-      const sql = `UPDATE orders SET qty=$1, user_id=$2, product_id=$3 WHERE id=$4 RETURNING *`;
+      const sql = `UPDATE order_products SET order_id=$1, product_id=$2, qty=$3 WHERE id=$4 RETURNING *`;
       const result = await connection.query(sql, [
-        order.qty,
-        order.user_id,
-        order.product_id,
-        order.id,
+        productToOrder.order_id,
+        productToOrder.product_id,
+        productToOrder.qty,
+        productToOrder.id,
       ]);
       connection.release();
       return result.rows[0];

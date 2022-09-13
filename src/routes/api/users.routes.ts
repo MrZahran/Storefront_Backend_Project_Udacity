@@ -8,7 +8,7 @@ const userModel = new UserModel();
 const routes = Router();
 
 /* Create User */
-routes.post("/", tokenMiddleware, async (req: Request, res: Response) => {
+routes.post("/", async (req: Request, res: Response) => {
   try {
     const user = await userModel.create(req.body);
     res.send(user);

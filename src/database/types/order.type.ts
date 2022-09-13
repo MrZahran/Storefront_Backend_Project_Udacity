@@ -1,8 +1,14 @@
 type Order = {
   id?: number;
-  qty: number;
   user_id: number;
-  product_id: number;
+  status: string;
 };
 
-export default Order;
+type ProductToOrder = {
+  id?: number;
+  order_id: number;
+  product_id: number;
+  qty: number;
+};
+
+export { Order, ProductToOrder };
