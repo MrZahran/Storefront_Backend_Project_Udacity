@@ -38,3 +38,31 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 - Current Order by user (args: user id)[token required]
 - `/api/orders/:user_id` [GET]
+
+## Database Schema
+
+#### Users Table
+
+- id : number
+- email : string
+- username : string
+- password : string
+
+#### Products Table
+
+- id : number
+- title : string
+- price : string
+
+#### Orders Table
+
+- id : number
+- user_id : number
+- status : string
+
+## ProductToOrder Table
+
+- id : number
+- order_id : number
+- product_id : number
+- qty : number

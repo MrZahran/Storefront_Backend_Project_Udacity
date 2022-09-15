@@ -2,7 +2,8 @@ import User from "../database/types/user.type";
 import db from "../database";
 import bcrypt from "bcrypt";
 import config from "../config";
-import { Order, ProductToOrder } from "../database/types/order.type";
+import { ProductToOrder } from "../database/types/order.type";
+import Order from "../database/types/order.type";
 
 class GenerateOrder {
   // Create Order

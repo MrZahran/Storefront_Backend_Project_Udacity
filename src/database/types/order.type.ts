@@ -11,4 +11,5 @@ type ProductToOrder = {
   qty: number;
 };
 
-export { Order, ProductToOrder };
+export default Order;
+export { ProductToOrder };

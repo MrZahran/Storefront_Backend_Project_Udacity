@@ -20,7 +20,7 @@ routes.post(
 );
 
 /* Get All Orders */
-routes.get("/", async (req: Request, res: Response) => {
+routes.get("/", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const getAllOrders = await orderModel.getAllOrders();
     res.send(getAllOrders);
@@ -44,7 +44,7 @@ routes.get(
 );
 
 /* Update User */
-routes.patch("/", async (req: Request, res: Response) => {
+routes.patch("/", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const newOrder = await orderModel.updateOrder(req.body);
     res.send(newOrder);
@@ -55,7 +55,7 @@ routes.patch("/", async (req: Request, res: Response) => {
 });
 
 /* Delete User */
-routes.delete("/:id", async (req: Request, res: Response) => {
+routes.delete("/:id", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const oneUser = await orderModel.deleteOrder(req.params.id as string);
     res.send(oneUser);

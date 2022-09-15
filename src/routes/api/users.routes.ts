@@ -18,7 +18,7 @@ routes.post("/", async (req: Request, res: Response) => {
 });
 
 /* Get All User ( Get Many ) */
-routes.get("/", async (req: Request, res: Response) => {
+routes.get("/", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const allUser = await userModel.getAllUsers();
     res.send(allUser);
@@ -29,7 +29,7 @@ routes.get("/", async (req: Request, res: Response) => {
 });
 
 /* Get One User By ID ( Get One ) */
-routes.get("/:id", async (req: Request, res: Response) => {
+routes.get("/:id", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const oneUser = await userModel.getOneUser(req.params.id as string);
     res.send(oneUser);
@@ -40,7 +40,7 @@ routes.get("/:id", async (req: Request, res: Response) => {
 });
 
 /* Update User */
-routes.patch("/", async (req: Request, res: Response) => {
+routes.patch("/", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const newUser = await userModel.updateUser(req.body);
     res.send(newUser);
@@ -51,7 +51,7 @@ routes.patch("/", async (req: Request, res: Response) => {
 });
 
 /* Delete User */
-routes.delete("/:id", async (req: Request, res: Response) => {
+routes.delete("/:id", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const oneUser = await userModel.deleteUser(req.params.id as string);
     res.send(oneUser);

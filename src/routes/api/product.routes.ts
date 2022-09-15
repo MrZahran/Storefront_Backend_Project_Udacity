@@ -19,7 +19,7 @@ routes.post("/create", async (req: Request, res: Response) => {
 });
 
 /* Get All Products ( Get Many ) */
-routes.get("/", async (req: Request, res: Response) => {
+routes.get("/", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const getAllProducts = await productModel.getAllProducts();
     res.send(getAllProducts);
@@ -30,7 +30,7 @@ routes.get("/", async (req: Request, res: Response) => {
 });
 
 /* Get One User By ID ( Get One ) */
-routes.get("/:id", async (req: Request, res: Response) => {
+routes.get("/:id", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const oneProduct = await productModel.getOneProduct(
       req.params.id as string
@@ -43,7 +43,7 @@ routes.get("/:id", async (req: Request, res: Response) => {
 });
 
 /* Update User */
-routes.patch("/", async (req: Request, res: Response) => {
+routes.patch("/", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const newProducts = await productModel.updateProducts(req.body);
     res.send(newProducts);
@@ -54,7 +54,7 @@ routes.patch("/", async (req: Request, res: Response) => {
 });
 
 /* Delete User */
-routes.delete("/:id", async (req: Request, res: Response) => {
+routes.delete("/:id", tokenMiddleware, async (req: Request, res: Response) => {
   try {
     const deleteProducts = await productModel.deleteProducts(
       req.params.id as string

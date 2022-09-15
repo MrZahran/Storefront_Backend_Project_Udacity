@@ -13,6 +13,37 @@ const userModel = new UserModel();
 const productModel = new ProductModel();
 const generateOrder = new GenerateOrder();
 let userid: number;
+let token = "";
+
+describe("Get Token", () => {
+  const newUser: User = {
+    id: 1,
+    email: "test_1@mail.com",
+    username: "test name",
+    password: "testPass",
+  };
+
+  beforeAll(async () => {
+    console.log("Creating Email....");
+    const createUser = await userModel.create(newUser);
+  });
+
+  afterAll(async () => {
+    const connection = await db.connect();
+    const sql =
+      "DELETE FROM users; \nALTER SEQUENCE users_id_seq RESTART WITH 1;";
+    await connection.query(sql);
+    connection.release();
+  });
+
+  it("When Correct Data Get Token", async () => {
+    const res = await reqTest
+      .post("/api/users/authenticate")
+      .send({ email: "test_1@mail.com", password: "testPass" });
+
+    token = res.body.data.token;
+  });
+});
 
 describe("Make Order", () => {
   const newUser: User = {
@@ -48,16 +79,59 @@ describe("Make Order", () => {
   it("Make Order Is Run Correct", async () => {
     const newOrder: Order = {
       id: 1,
-      qty: 10,
       user_id: userid,
-      product_id: 1,
+      status: "Active",
     };
     const createOrder = await generateOrder.create(newOrder);
     console.log(createOrder);
 
+    const products = await productModel.getAllProducts();
+    expect(products.length).toBeGreaterThan(0);
+
     expect(createOrder.id).toBe(newOrder.id);
-    expect(createOrder.qty).toBe(newOrder.qty);
     expect(createOrder.user_id).toBe(newOrder.user_id);
-    expect(createOrder.product_id).toBe(newOrder.product_id);
+    expect(createOrder.status).toBe(newOrder.status);
+  });
+
+  it("Create Order", async () => {
+    const createOrder: Order = {
+      id: 2,
+      user_id: 1,
+      status: "Active",
+    };
+
+    const res = await reqTest
+      .post("/api/orders/create-order")
+      .set("Authorization", `Bearer ${token}`)
+      .send(createOrder);
+
+    console.log(res.body);
+
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(createOrder.id);
+    expect(res.body.user_id).toBe(createOrder.user_id);
+    expect(res.body.status).toBe(createOrder.status);
+  });
+
+  it("Get All Orders", async () => {
+    const res = await reqTest
+      .get("/api/orders")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+
+  it("Get Order By Id", async () => {
+    const res = await reqTest
+      .get("/api/orders/1")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.body.id).toBe(1);
+  });
+
+  it("Delete Order By Id", async () => {
+    const res = await reqTest
+      .delete("/api/orders/1")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.body.id[1]).toBe(undefined);
   });
 });
